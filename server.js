@@ -14,7 +14,7 @@ app.use(express.json());
 // set up middleware to instruct the server to make static files available
 app.use(express.static('public'));
 
-// set route to server root and respond with the file I want he server to read
+// set route to server root and respond with the file I want the server to read
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
   });
@@ -28,21 +28,22 @@ app.get('/', (req, res) => {
   app.get('/api/notes', (req, res) => { 
     res.json(notes);
   });
-
+  // request to post note and set id based on what the next index of the the array will be
   app.post('/api/notes', (req, res) => {
-    // set id based on what the next index of the array will be
     req.body.id = notes.length.toString();
     notes.push(req.body)
     fs.writeFileSync("./db/db.json", JSON.stringify(notes))
     res.json(notes)
   });
-  // request to delete by id and rewrite array
+
+  // (Bonus) request to delete by id and rewrite array
   app.delete("/api/notes/:id", function(req, res) {
     console.log("req params", req.params.id)
     notes = notes.filter(({ id }) => id !== req.params.id);
     fs.writeFileSync("./db/db.json", JSON.stringify(notes))
     res.json(notes)
   });
+
 // set up server to "listen" for requests
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
